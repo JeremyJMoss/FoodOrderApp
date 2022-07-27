@@ -1,6 +1,8 @@
 {
   "name": "foodorderappbackend",
   "version": "1.0.0",
+  "homepage": "/",
+  "proxy": "http://localhost:3000",
   "description": "food order app with react backend server",
   "main": "index.js",
   "scripts": {
@@ -10,6 +12,7 @@
   "author": "Jeremy J Moss",
   "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.1"
   },
   "devDependencies": {

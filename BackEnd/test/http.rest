@@ -1,0 +1,17 @@
+# POST http://localhost:5000/admin/food
+# Content-Type: application/json
+# Accept: application/json
+
+# {
+#     "universe": "milky way"
+# }
+
+POST http://localhost:5000/admin/food
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "happy",
+    "description": "orange",
+    "price": 20
+}
