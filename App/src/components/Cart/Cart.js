@@ -43,21 +43,12 @@ const Cart = function(props){
         )
     });
 
-    // const sendToServer = async function(){
-    //     console.log(ctx.items);
-    //     const response = await fetch("http://localhost:5000/food", {
-    //     method: "POST",
-    //     headers: {
-    //         "Content-Type": "application/json"
-    //     },
-    //     body: JSON.stringify(ctx.items)
-    //     })
-    //     const data = await response.json();
-    //     console.log(data);
-
-    // }
-
-
+    const modalActions = (
+        <div className={classes.actions}>
+            <button className={classes["button--alt"]} onClick={props.onHideCart}>Close</button>
+            {hasItems && <button className={classes.button} onClick={openForm}>Order</button>}
+        </div>
+    )
     
     return (
         <Modal onClick={props.onHideCart}>
@@ -71,10 +62,7 @@ const Cart = function(props){
             {
                 checkoutOpened 
                 ? <Checkout onCancel={setCheckoutOpened} checkoutOpened={checkoutOpened}/>
-                : <div className={classes.actions}>
-                    <button className={classes["button--alt"]} onClick={props.onHideCart}>Close</button>
-                    {hasItems && <button className={classes.button} onClick={openForm}>Order</button>}
-                </div>
+                : modalActions
             }
         </Modal>
     )
