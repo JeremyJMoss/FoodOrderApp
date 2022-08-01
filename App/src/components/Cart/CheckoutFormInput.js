@@ -2,7 +2,7 @@ import classes from "./CheckoutFormInput.module.css";
 
 const CheckoutFormInput = function(props){
     return (
-        <div className={classes.control}>
+        <div className={`${classes.control} ${props.error ? classes.invalid : ""}`}>
             <label htmlFor={props.id}>{props.label}</label>
             <input 
             type={props.type} 

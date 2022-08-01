@@ -62,3 +62,10 @@ color: #ca3e51;
 border-color: #aa0b20;
 background-color: #ffeff1;
 }
+
+.submit:disabled,
+.submit:disabled:hover {
+    background-color: grey;
+    border-color: grey;
+    cursor: not-allowed;
+}

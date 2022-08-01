@@ -6,12 +6,17 @@
 #     "universe": "milky way"
 # }
 
-POST http://localhost:5000/admin/food
+POST http://localhost:5000/order-details
 Content-Type: application/json
 Accept: application/json
 
 {
-    "name": "happy",
-    "description": "orange",
-    "price": 20
+    "userDetails": {
+        "firstName": "Harry",
+        "lastName": "Potter"
+    },
+    "foodOrder": {
+        "Shrimp": 12,
+        "Orange": 2
+    }
 }

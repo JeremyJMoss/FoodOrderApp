@@ -1,6 +1,7 @@
 import classes from "./Checkout.module.css";
 import useInput from "../../hooks/useInput";
 import CheckoutFormInput from "./CheckoutFormInput";
+import ErrorMessage from "./ErrorMessage";
 
 const STATES = ["ACT", "NSW", "WA", "SA", "TAS", "QLD", "NT"];
 
@@ -8,7 +9,7 @@ const Checkout = function(props){
     const checkForEmptyString = function(input){
         return input.trim() !== "";
     }
-    
+
     //creating state variables outside of function using custom useInput hook
     const {
         value: firstName, 
@@ -55,12 +56,14 @@ const Checkout = function(props){
     const {
         value: state,
         hasError: stateNotValid,
-        IsValid: stateIsValid,
+        isValid: stateIsValid,
         changeHandler: stateChangeHandler,
         blurHandler: stateBlurHandler,
         resetHandler: stateResetHandler} = useInput((input) => {
             return checkForEmptyString(input) && STATES.includes(input.toUpperCase());
         })
+
+    const formValid = firstNameIsValid && lastNameIsValid && streetIsValid && cityIsValid && postCodeIsValid && stateIsValid
 
     const cancel = function(event){
         event.preventDefault();
@@ -69,6 +72,7 @@ const Checkout = function(props){
 
     const confirmHandler = function(event){
         event.preventDefault();
+        
         firstNameResetHandler();
         lastNameResetHandler();
         streetResetHandler();
@@ -76,52 +80,66 @@ const Checkout = function(props){
         postCodeResetHandler();
         stateResetHandler();
     }
+
+    
     
     return (
         <form className={classes.form} onSubmit={confirmHandler}>
-            <CheckoutFormInput 
+            <CheckoutFormInput
+            error={firstNameNotValid} 
             label="First Name" 
             type="text" 
             id="firstName" 
             value={firstName} 
             onBlur={firstNameBlurHandler} 
             onChange={firstNameChangeHandler}/>
-            <CheckoutFormInput 
+            {firstNameNotValid && <ErrorMessage message="Please enter first name"/>}
+            <CheckoutFormInput
+            error={lastNameNotValid} 
             label="Last Name" 
             type="text" 
             id="lastName" 
             value={lastName} 
             onBlur={lastNameBlurHandler} 
             onChange={lastNameChangeHandler}/>
-            <CheckoutFormInput 
+            {lastNameNotValid && <ErrorMessage message="Please enter last name"/>}
+            <CheckoutFormInput
+            error={streetNotValid} 
             label="Street"
             type="text" 
             id="street" 
             value={street} 
             onBlur={streetBlurHandler} 
             onChange={streetChangeHandler}/>
+            {streetNotValid && <ErrorMessage message="Please enter street address"/>}
             <CheckoutFormInput 
+            error={cityNotValid}
             label="City" 
             type="text" 
             id="city" 
             value={city} 
             onBlur={cityBlurHandler} 
             onChange={cityChangeHandler}/>
+            {cityNotValid && <ErrorMessage message="Please enter city"/>}
             <CheckoutFormInput
+            error={postCodeNotValid}
             label="PostCode"
             type="text"
             id="postCode"
             value={postCode}
             onBlur={postCodeBlurHandler}
             onChange={postCodeChangeHandler}/>
+            {postCodeNotValid && <ErrorMessage message="Please enter valid postcode"/>}
             <CheckoutFormInput
+            error={stateNotValid}
             label="State"
             type="text"
             value={state}
             onBlur={stateBlurHandler}
             onChange={stateChangeHandler}/>
+            {stateNotValid && <ErrorMessage message="Please enter state"/>}
             <div className={classes.actions}>
-                <button className={classes.submit} type="submit">Confirm</button>
+                <button className={classes.submit} disabled={!formValid} type="submit">Confirm</button>
                 <button type="button" onClick={cancel}>Cancel</button>
             </div>
         </form>
