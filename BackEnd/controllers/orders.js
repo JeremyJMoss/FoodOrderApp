@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("node:fs/promises");
 const path = require("path");
 
 const pathToOrderDetails = path.join(__dirname, "..", "data", "orderDetails.json");
@@ -15,7 +15,7 @@ const checkPostcode = input => checkForEmptyString(input) && input.match(/^\d{4}
 
 const checkState = input => checkForEmptyString(input) && STATES.includes(input.toUpperCase());
 
-module.exports.postOrderDetails = function(req, res){
+module.exports.postOrderDetails = async function(req, res){
     // checking for valid fields passed in
     if (!("userDetails" in req.body) || 
         !("foodOrder" in req.body) || 
@@ -40,32 +40,28 @@ module.exports.postOrderDetails = function(req, res){
 
     foodOrder.forEach(item => {
         // check item keys are in food order item details
+        
     })
-    
-    fs.access(pathToOrderDetails, (err) => {
-        if (err){
-            fs.writeFile(pathToOrderDetails, "[]", (err) => {
-                if(err){
-                    console.error(err);
-                    return;
-                }
-                console.log("created orderDetails file for the first time");
-            })
-        }
-        fs.readFile(pathToOrderDetails, (err, data) => {
+    try{    
+        await fs.access(pathToOrderDetails, (err) => {
             if (err){
-                console.error(err);
-                return;
+                fs.writeFile(pathToOrderDetails, "[]", (err) => {
+                    if(err){
+                        throw new Error(err.message);
+                    }
+                    console.log("created orderDetails file for the first time");
+                })
             }
-
-            const currentStoredOrderDetails = JSON.parse(data);
-            
-            
-
-            
-
-            
         })
-
-    })
+    
+        await fs.readFile(pathToOrderDetails, (err, data) => {
+            if (err){
+                    throw new Error(err.message);
+                }
+            const currentStoredOrderDetails = JSON.parse(data);                    
+            })
+    }
+    catch(err){
+        return res.status(400).json({message: `${err.message}`});
+    }
 }

@@ -1,4 +1,3 @@
-const bodyParser = require("body-parser");
 const express = require("express");
 const server = express();
 const cors = require("cors");
@@ -12,7 +11,8 @@ const errorRoute = require("./routes/pageNotFound");
 let port = process.env.PORT || 5000;
 
 server.use(express.static(pathToStaticFolder))
-server.use(bodyParser.json());
+server.use(express.json());
+server.use(express.urlencoded({extended: true}))
 server.use(cors());
 
 server.use(shopRoutes);

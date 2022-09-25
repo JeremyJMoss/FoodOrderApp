@@ -17,18 +17,25 @@ module.exports.addMeal = function(req, res) {
             }
             const parsedJSON = JSON.parse(data);
             const newItem = req.body;
-            if (!(newItem.name && newItem.description && newItem.price)){
+            
+            if (!(newItem.productName && newItem.productDescription && newItem.productPrice)){
                 return res.status(400).json({message: "Please send name, description and price"});
             }
 
             if (Object.keys(newItem).length !== 3){
                 return res.status(400).json({message: "Please send only name, description and price"});
             }
-
-            if (isNaN(newItem.price)){
+            try{
+                // checking to see if price entered is a number
+                if(isNaN(Number(newItem.productPrice))){
+                    throw new Error("Not a number!");
+                }
+            }
+            catch(err){
                 return res.status(400).json({message: "Please enter valid price"})
             }
-            const newobject = {id: `m${Number(parsedJSON[parsedJSON.length-1].id[1]) + 1}`, ...newItem}
+            const newobject = {id: `m${Number(parsedJSON[parsedJSON.length-1].id[1]) + 1}`, name: newItem.productName, description: newItem.productDescription, price: Number(newItem.productPrice)};
+            console.log(newobject);
             parsedJSON.push(newobject)
             fs.writeFile(fileDataPath, JSON.stringify(parsedJSON), (err) => {
                 if(err){

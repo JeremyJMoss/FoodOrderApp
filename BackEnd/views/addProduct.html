@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/addProduct.css">
+    <title>Admin - Add Product</title>
+</head>
+<body>
+    <form method="POST" target="_blank" action="/admin/food" class="product__form">
+        <div class="input__field">
+            <label for="productName">Product Name:</label>
+            <input type="text" name="productName" id="productName"/>
+        </div>
+        <div class="input__field">
+            <label for="productDescription">Description:</label>
+            <input type="text" name="productDescription" id="productDescription"/>
+        </div>
+        <div class="input__field">
+            <label for="productPrice">Price:</label>
+            <input type="number" step="0.01" name="productPrice" id="productPrice"/>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

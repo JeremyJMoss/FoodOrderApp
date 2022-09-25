@@ -13,7 +13,11 @@ Accept: application/json
 {
     "userDetails": {
         "firstName": "Harry",
-        "lastName": "Potter"
+        "lastName": "Potter",
+        "street": "17 Privet Drive",
+        "city": "Little Whining",
+        "postcode": "2345",
+        "state": "NSW"
     },
     "foodOrder": {
         "Shrimp": 12,
