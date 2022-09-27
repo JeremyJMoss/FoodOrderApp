@@ -3,45 +3,82 @@ const path = require("path");
 
 const pathToOrderDetails = path.join(__dirname, "..", "data", "orderDetails.json");
 
-const userDetailFields = ["city", "firstName", "lastName", "postcode", "state", "street"];
+const userDetailFields = ["city", "firstName", "lastName", "street", "postCode", "state"];
 
-const foodOrderItemFields = ["id", "name", "amount", "price"];
+const foodOrderItemFields = ["name", "amount", "price"];
 
 const STATES = ["ACT", "NSW", "WA", "SA", "TAS", "QLD", "NT"];
 
-const checkForEmptyString = input => input.trim() !== "";
+const isEmptyString = input => input.trim() === "";
 
-const checkPostcode = input => checkForEmptyString(input) && input.match(/^\d{4}$/);
+const checkPostcode = input => input.match(/^\d{4}$/);
 
-const checkState = input => checkForEmptyString(input) && STATES.includes(input.toUpperCase());
+const checkState = input => STATES.includes(input.toUpperCase());
 
 module.exports.postOrderDetails = async function(req, res){
     // checking for valid fields passed in
-    if (!("userDetails" in req.body) || 
-        !("foodOrder" in req.body) || 
-        Object.keys(req.body) !== 2 ||
+    if (!Object.keys(req.body).includes("userDetails") || 
+        !Object.keys(req.body).includes("foodOrder") || 
+        !Object.keys(req.body) === 2 ||
         typeof req.body.userDetails !== "object" ||
-        Array.isArray(!req.body.foodOrder)){
+        !Array.isArray(req.body.foodOrder)){
             return res.status(400).json({message: "Invalid Request"})
     }
 
+    
+
     const userDetails = req.body.userDetails;
 
-    if (Object.keys(userDetails).length !== 6){
-        return res.status(400).json("Invalid Request")
-    }
-    Object.keys(userDetails).forEach((key) => {
-        if (!userDetailFields.includes(key)){
-            return res.status(400).json({message: `${key} is not a supported field`})
+    for (let field of Object.keys(userDetails)){
+        //seeing if the fields passed in match the field names required
+        if (!userDetailFields.includes(field)){
+            return res.status(400).json({message: `${field} is not a supported field`})
         }
-    })
-
+        //checking if the first 4 field names in userDetailFields array are empty strings
+        if (userDetailFields.slice(0,3).includes(field)){
+            if (isEmptyString(userDetails[field])){
+                return res.status(400).json({message: `${field} cannot be empty`});
+            }
+        }
+        //checking if postcode is correct
+        if (field === userDetailFields[4]){
+            if(!checkPostcode(userDetails[field])){
+                return res.status(400).json({message: `${field} cannot be empty and has to be a valid postcode`})
+            }
+        }
+        //checking if state is a valid state
+        if (field === userDetailFields[5]){
+            if(!checkState(userDetails[field])){
+                return res.status(400).json({message: `${field} cannot be empty and has to be a valid state`})
+            }
+        }
+    }
+    
     const foodOrder = req.body.foodOrder;
 
-    foodOrder.forEach(item => {
-        // check item keys are in food order item details
-        
-    })
+    // checking if food has been added to foodOrder array
+    if (foodOrder.length == 0){
+        return res.status(400).json({message: "No food has been added to order"});
+    }
+
+    for (let item of foodOrder){
+        for (let field in item){
+            if (!foodOrderItemFields.includes(field)){
+                return res.status(400).json({message: `${field} is not a valid food order field`});
+            }
+            if (field === foodOrderItemFields[0] && isEmptyString(item[field])){
+                return res.status(400).json({message: `${field} cannot be empty`});
+            }
+            if (field === foodOrderItemFields[1] && typeof item[field] != "number" && item[field] < 1 ){
+                return res.status(400).json({message: `${field} cannot be less than 1`});
+            }
+            if (field === foodOrderItemFields[2] && typeof item[field] != "number" && item[field] <= 0){
+                return res.status(400).json({message: `${field} cannot be less than or equal to 0`});
+            }
+        }
+    }    
+
+    return res.status(200).json(req.body);
     try{    
         await fs.access(pathToOrderDetails, (err) => {
             if (err){

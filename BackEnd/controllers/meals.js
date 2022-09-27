@@ -35,7 +35,6 @@ module.exports.addMeal = function(req, res) {
                 return res.status(400).json({message: "Please enter valid price"})
             }
             const newobject = {id: `m${Number(parsedJSON[parsedJSON.length-1].id[1]) + 1}`, name: newItem.productName, description: newItem.productDescription, price: Number(newItem.productPrice)};
-            console.log(newobject);
             parsedJSON.push(newobject)
             fs.writeFile(fileDataPath, JSON.stringify(parsedJSON), (err) => {
                 if(err){

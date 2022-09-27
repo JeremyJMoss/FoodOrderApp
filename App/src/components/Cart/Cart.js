@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 import classes from "./Cart.module.css";
 import Modal from "../UI/Modal";
 import CartContext from "../../store/cart-context";
@@ -8,6 +8,8 @@ import Checkout from "./Checkout";
 const Cart = function(props){
     const ctx = useContext(CartContext);
     const [checkoutOpened, setCheckoutOpened] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [didSubmit, setDidSubmit] = useState(false);
 
     const totalAmount = Intl.NumberFormat(
         navigator.language, 
@@ -49,9 +51,9 @@ const Cart = function(props){
             {hasItems && <button className={classes.button} onClick={openForm}>Order</button>}
         </div>
     )
-    
-    return (
-        <Modal onClick={props.onHideCart}>
+
+    const cartModalContent = (
+        <Fragment>
             <ul className={classes["cart-items"]}>
                 {cartItems}
             </ul>
@@ -61,9 +63,21 @@ const Cart = function(props){
             </div>
             {
                 checkoutOpened 
-                ? <Checkout onCancel={setCheckoutOpened} checkoutOpened={checkoutOpened}/>
+                ? <Checkout isSubmitting={setIsSubmitting} didSubmit={setDidSubmit} onCancel={setCheckoutOpened} checkoutOpened={checkoutOpened}/>
                 : modalActions
             }
+        </Fragment>
+    )
+
+    const isSubmittingModalContent = <p>Sending order data...</p>;
+
+    const didSubmitModalContent = <p>Successfully sent the order!</p>;
+    
+    return (
+        <Modal onClick={props.onHideCart}>
+            {!isSubmitting && !didSubmit && cartModalContent}
+            {isSubmitting && isSubmittingModalContent}
+            {!isSubmitting && didSubmit && didSubmitModalContent}
         </Modal>
     )
 }

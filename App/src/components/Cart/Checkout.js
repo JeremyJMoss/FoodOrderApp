@@ -1,11 +1,14 @@
+import { useContext } from "react";
 import classes from "./Checkout.module.css";
 import useInput from "../../hooks/useInput";
 import CheckoutFormInput from "./CheckoutFormInput";
 import ErrorMessage from "./ErrorMessage";
+import CartContext from "../../store/cart-context";
 
 const STATES = ["ACT", "NSW", "WA", "SA", "TAS", "QLD", "NT"];
 
 const Checkout = function(props){
+    const ctx = useContext(CartContext);
     const checkForEmptyString = function(input){
         return input.trim() !== "";
     }
@@ -70,18 +73,44 @@ const Checkout = function(props){
         props.onCancel(!props.checkoutOpened);
     }
 
-    const confirmHandler = function(event){
+    const confirmHandler = async function(event){
         event.preventDefault();
-        
+
+        props.isSubmitting(true);
+
         firstNameResetHandler();
         lastNameResetHandler();
         streetResetHandler();
         cityResetHandler();
         postCodeResetHandler();
         stateResetHandler();
-    }
 
-    
+        const userData = {
+            userDetails: {
+                firstName,
+                lastName,
+                street,
+                city,
+                postCode,
+                state
+            },
+            foodOrder: ctx.items.map(item => {
+                return {name: item.name, amount: item.amount, price: item.price};
+            })
+        }
+
+        const response = await fetch("http://localhost:5000/order-details", {
+            method: "POST",
+            body: JSON.stringify(userData),
+            headers:{
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        });
+        console.log(response);
+        props.isSubmitting(false);
+        props.didSubmit(true);
+    }
     
     return (
         <form className={classes.form} onSubmit={confirmHandler}>
