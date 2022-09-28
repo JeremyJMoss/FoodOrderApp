@@ -16,11 +16,8 @@ Accept: application/json
         "lastName": "Potter",
         "street": "17 Privet Drive",
         "city": "Little Whining",
-        "postcode": "2345",
+        "postCode": "2345",
         "state": "NSW"
     },
-    "foodOrder": {
-        "Shrimp": 12,
-        "Orange": 2
-    }
+    "foodOrder": [{"name": "Jeremy", "amount": 1, "price": 12}]
 }

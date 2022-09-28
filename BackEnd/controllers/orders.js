@@ -1,4 +1,4 @@
-const fs = require("node:fs/promises");
+const fs = require("fs");
 const path = require("path");
 
 const pathToOrderDetails = path.join(__dirname, "..", "data", "orderDetails.json");
@@ -15,7 +15,7 @@ const checkPostcode = input => input.match(/^\d{4}$/);
 
 const checkState = input => STATES.includes(input.toUpperCase());
 
-module.exports.postOrderDetails = async function(req, res){
+module.exports.postOrderDetails = function(req, res){
     // checking for valid fields passed in
     if (!Object.keys(req.body).includes("userDetails") || 
         !Object.keys(req.body).includes("foodOrder") || 
@@ -78,9 +78,8 @@ module.exports.postOrderDetails = async function(req, res){
         }
     }    
 
-    return res.status(200).json(req.body);
     try{    
-        await fs.access(pathToOrderDetails, (err) => {
+        fs.access(pathToOrderDetails, fs.constants.F_OK, (err) => {
             if (err){
                 fs.writeFile(pathToOrderDetails, "[]", (err) => {
                     if(err){
@@ -90,13 +89,19 @@ module.exports.postOrderDetails = async function(req, res){
                 })
             }
         })
-    
-        await fs.readFile(pathToOrderDetails, (err, data) => {
+        fs.readFile(pathToOrderDetails, (err, data) => {
             if (err){
                     throw new Error(err.message);
                 }
-            const currentStoredOrderDetails = JSON.parse(data);                    
-            })
+            const currentStoredOrderDetails = JSON.parse(data);
+            const newCurrentStoredOrders = [...currentStoredOrderDetails, req.body];
+            fs.writeFile(pathToOrderDetails, JSON.stringify(newCurrentStoredOrders), (err) => {
+                if(err){
+                    throw new Error(err.message);
+                }
+                return res.status(200).json({message: "Successfully Sent Order!"});
+            })                    
+        })
     }
     catch(err){
         return res.status(400).json({message: `${err.message}`});

@@ -107,7 +107,8 @@ const Checkout = function(props){
                 "Accept": "application/json"
             }
         });
-        console.log(response);
+        const data = await response.json();
+        props.messageSetter(data.message);
         props.isSubmitting(false);
         props.didSubmit(true);
     }

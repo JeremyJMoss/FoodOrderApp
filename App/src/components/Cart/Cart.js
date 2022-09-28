@@ -10,6 +10,7 @@ const Cart = function(props){
     const [checkoutOpened, setCheckoutOpened] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [didSubmit, setDidSubmit] = useState(false);
+    const [message, setMessage] = useState("");
 
     const totalAmount = Intl.NumberFormat(
         navigator.language, 
@@ -63,7 +64,7 @@ const Cart = function(props){
             </div>
             {
                 checkoutOpened 
-                ? <Checkout isSubmitting={setIsSubmitting} didSubmit={setDidSubmit} onCancel={setCheckoutOpened} checkoutOpened={checkoutOpened}/>
+                ? <Checkout messageSetter={setMessage} isSubmitting={setIsSubmitting} didSubmit={setDidSubmit} onCancel={setCheckoutOpened} checkoutOpened={checkoutOpened}/>
                 : modalActions
             }
         </Fragment>
@@ -71,7 +72,7 @@ const Cart = function(props){
 
     const isSubmittingModalContent = <p>Sending order data...</p>;
 
-    const didSubmitModalContent = <p>Successfully sent the order!</p>;
+    const didSubmitModalContent = <p>{message}</p>;
     
     return (
         <Modal onClick={props.onHideCart}>
