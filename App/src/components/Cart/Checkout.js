@@ -8,7 +8,9 @@ import CartContext from "../../store/cart-context";
 const STATES = ["ACT", "NSW", "WA", "SA", "TAS", "QLD", "NT"];
 
 const Checkout = function(props){
+
     const ctx = useContext(CartContext);
+
     const checkForEmptyString = function(input){
         return input.trim() !== "";
     }
@@ -66,6 +68,7 @@ const Checkout = function(props){
             return checkForEmptyString(input) && STATES.includes(input.toUpperCase());
         })
 
+    // Obtaining boolean for if form is valid
     const formValid = firstNameIsValid && lastNameIsValid && streetIsValid && cityIsValid && postCodeIsValid && stateIsValid
 
     const cancel = function(event){
@@ -78,6 +81,7 @@ const Checkout = function(props){
 
         props.isSubmitting(true);
 
+        // reseting form
         firstNameResetHandler();
         lastNameResetHandler();
         streetResetHandler();
@@ -85,6 +89,7 @@ const Checkout = function(props){
         postCodeResetHandler();
         stateResetHandler();
 
+        // creating object to send to server
         const userData = {
             userDetails: {
                 firstName,
@@ -107,14 +112,18 @@ const Checkout = function(props){
                 "Accept": "application/json"
             }
         });
-        const data = await response.json();
+        if (response.ok){
+            ctx.clearCart();
+        }
+        const data = await response.json();        
+        props.didSubmit(true);
         props.messageSetter(data.message);
         props.isSubmitting(false);
-        props.didSubmit(true);
     }
     
     return (
         <form className={classes.form} onSubmit={confirmHandler}>
+            
             <CheckoutFormInput
             error={firstNameNotValid} 
             label="First Name" 
@@ -124,6 +133,7 @@ const Checkout = function(props){
             onBlur={firstNameBlurHandler} 
             onChange={firstNameChangeHandler}/>
             {firstNameNotValid && <ErrorMessage message="Please enter first name"/>}
+            
             <CheckoutFormInput
             error={lastNameNotValid} 
             label="Last Name" 
@@ -133,6 +143,7 @@ const Checkout = function(props){
             onBlur={lastNameBlurHandler} 
             onChange={lastNameChangeHandler}/>
             {lastNameNotValid && <ErrorMessage message="Please enter last name"/>}
+            
             <CheckoutFormInput
             error={streetNotValid} 
             label="Street"
@@ -142,6 +153,7 @@ const Checkout = function(props){
             onBlur={streetBlurHandler} 
             onChange={streetChangeHandler}/>
             {streetNotValid && <ErrorMessage message="Please enter street address"/>}
+            
             <CheckoutFormInput 
             error={cityNotValid}
             label="City" 
@@ -151,6 +163,7 @@ const Checkout = function(props){
             onBlur={cityBlurHandler} 
             onChange={cityChangeHandler}/>
             {cityNotValid && <ErrorMessage message="Please enter city"/>}
+            
             <CheckoutFormInput
             error={postCodeNotValid}
             label="PostCode"
@@ -160,6 +173,7 @@ const Checkout = function(props){
             onBlur={postCodeBlurHandler}
             onChange={postCodeChangeHandler}/>
             {postCodeNotValid && <ErrorMessage message="Please enter valid postcode"/>}
+            
             <CheckoutFormInput
             error={stateNotValid}
             label="State"
@@ -168,10 +182,12 @@ const Checkout = function(props){
             onBlur={stateBlurHandler}
             onChange={stateChangeHandler}/>
             {stateNotValid && <ErrorMessage message="Please enter state"/>}
+            
             <div className={classes.actions}>
                 <button className={classes.submit} disabled={!formValid} type="submit">Confirm</button>
                 <button type="button" onClick={cancel}>Cancel</button>
             </div>
+
         </form>
     )
 }
